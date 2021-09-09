@@ -29,7 +29,6 @@ client.on('message', (message: Message) => {
   }
 
   // `!gacha` 以外のコマンドだったら無視
-  console.log('message', message.content)
   if (message.content !== '!gacha') {
     return
   }
