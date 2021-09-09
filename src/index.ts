@@ -1,15 +1,16 @@
 require('dotenv').config()
 import {
   Client,
-  GuildChannel,
   GuildMember,
   Message,
   User,
-  VoiceChannel
+  VoiceChannel,
 } from "discord.js"
 const client = new Client()
 
-// bot 名を確認のために表示
+/**
+ * 接続確認のために bot 名を表示
+ */
 client.on('ready', () => {
   if (!client.user) {
     console.error('認証できないよ')
@@ -18,45 +19,54 @@ client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}.`)
 })
 
-// チャット欄のコメントを受け取る処理
+/**
+ * チャット欄のコメントを受け取ってメンバーリストを返す処理
+ */
 client.on('message', (message: Message) => {
   if (!message.guild) {
     console.error('ギルドがないよ')
     return
   }
 
-  // コメントしたメンバー
+  // `!gacha` 以外のコマンドだったら無視
+  console.log('message', message.content)
+  if (message.content !== '!gacha') {
+    return
+  }
+
+  // メッセージを発した author user 情報を取得
   const author: User = message.author
 
-  if (message.content === '!gacha') {
-    const channels = message.guild.channels
-    const voiceCH = channels.cache.find((ch: GuildChannel) => {
-      if (ch.type !== 'voice') {
-        return false
-      }
-      // ボイスチャンネルのうち、コメントしたメンバーがいるチャンネルを取得
-      return !!ch.members.filter((member: GuildMember) => member.user.id === author.id)
-    }) as VoiceChannel
-    
-    if (!voiceCH) {
-      console.error('チャンネルがみっかんないよ')
-      return
-    }
+  // 現状のチャンネル一覧から Voice チャンネルだけ取得
+  const voiceChs = client.channels.cache.filter(ch => ch instanceof VoiceChannel)
 
-    // voice チャンネルに参加しているメンバー一覧を取得
-    const voiceCHMemberNames: string[] = voiceCH.members
-      .map(member => member.user.username)
-    const shuffledMembers = shuffleArray(voiceCHMemberNames)
+  // author が今いるボイスチャンネルを特定
+  const targetVoiceCh: any = voiceChs.find((ch: any) => {
+    const chMembers: GuildMember[] = ch.members
+    return !!chMembers.find(member => member.user.id === author.id)
+  })
 
-    // リストにしてテキストチャンネルに送信する
-    const joinedMembers = shuffledMembers
-      .map((member: string, index: number) => `${index + 1}. ${member}`)
-      .join('\n')
-
-    const sendMessage = joinedMembers || 'ボイスチャンネルのメンバーを取得できなかったよ'
-
-    message.channel.send(sendMessage)
+  if (!targetVoiceCh) {
+    console.error('チャンネルがみっかんないよ')
+    return
   }
+
+  // 参加中の voice チャンネルの参加者全員の名前を取得
+  const voiceCHMemberNames: string[] = targetVoiceCh.members
+    .map((member: GuildMember) => member.user.username)
+
+  // ランダムに並び替える
+  const shuffledMembers = shuffleArray(voiceCHMemberNames)
+
+  // リストにしてテキストチャンネルに送信する
+  const joinedMembers = shuffledMembers
+    .map((member: string, index: number) => `${index + 1}. ${member}`)
+    .join('\n')
+
+  const sendMessage = joinedMembers || 'ボイスチャンネルのメンバーを取得できなかったよ'
+
+  // メッセージを返す
+  message.channel.send(sendMessage)
 })
 
 // 与えられた配列をシャッフルして返す
