@@ -3,7 +3,6 @@ import {
   Client,
   GuildMember,
   Message,
-  User,
   VoiceChannel,
 } from "discord.js"
 const client = new Client()
@@ -33,17 +32,12 @@ client.on('message', (message: Message) => {
     return
   }
 
-  // メッセージを発した author user 情報を取得
-  const author: User = message.author
-
-  // 現状のチャンネル一覧から Voice チャンネルだけ取得
+  // 現状のチャンネル一覧から daily_scrum チャンネルを取得
   const voiceChs = client.channels.cache.filter(ch => ch instanceof VoiceChannel)
 
-  // author が今いるボイスチャンネルを特定
-  const targetVoiceCh: any = voiceChs.find((ch: any) => {
-    const chMembers: GuildMember[] = ch.members
-    return !!chMembers.find(member => member.user.id === author.id)
-  })
+  // daily_scrum ボイスチャンネルを特定
+  // TODO: ボイスチャンネルの型を当てたい
+  const targetVoiceCh: any = voiceChs.find((ch: any) => ch.id === '908188153792311297')
 
   if (!targetVoiceCh) {
     console.error('チャンネルがみっかんないよ')
