@@ -32,10 +32,10 @@ client.on('message', (message: Message) => {
     return
   }
 
-  // 現状のチャンネル一覧から daily_scrum チャンネルを取得
+  // 現状のチャンネル一覧から目的のチャンネルを取得
   const voiceChs = client.channels.cache.filter(ch => ch instanceof VoiceChannel)
 
-  // daily_scrum ボイスチャンネルを特定
+  // 目的のボイスチャンネルを特定
   // TODO: ボイスチャンネルの型を当てたい
   const targetVoiceCh: any = voiceChs.find((ch: any) => ch.id === '908188153792311297')
 
