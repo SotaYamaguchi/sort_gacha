@@ -61,6 +61,9 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 
   // メッセージを返す
   await interaction.reply(sendMessage)
+      .catch(err => {
+        console.error(err)
+      })
 })
 
 // 与えられた配列をシャッフルして返す

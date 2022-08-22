@@ -76,7 +76,10 @@ client.on('interactionCreate', function (interaction) { return __awaiter(void 0,
                     .join('\n');
                 sendMessage = joinedMembers || 'ボイスチャンネルのメンバーを取得できなかったよ';
                 // メッセージを返す
-                return [4 /*yield*/, interaction.reply(sendMessage)];
+                return [4 /*yield*/, interaction.reply(sendMessage)
+                        .catch(function (err) {
+                        console.error(err);
+                    })];
             case 3:
                 // メッセージを返す
                 _a.sent();
